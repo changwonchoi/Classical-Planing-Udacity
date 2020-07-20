@@ -150,16 +150,23 @@ class PlanningGraph:
         levelcost = 0
         levelsum = 0
         goalcheck = dict()
-        while not self._is_leveled:
+        while not self._is_leveled and len(self.goal) != len(goalcheck.keys()):
             for goal in self.goal:
                 if goal not in goalcheck.keys():
-                    for literal in self.literal_layers[-1]:
-                        if literal == goal:
-                            goalcheck[goal] = True
-                            levelsum += levelcost
+                    if goal in self.literal_layers[-1]:
+                        goalcheck[goal] = True
+                        levelsum += levelcost
             levelcost+=1
             self._extend()
         return levelsum
+#         self.fill()
+#         level_cost =0
+#         for goal in self.goal:
+#             for cost, layer in enumerate(self.literal_layers):
+#                 if goal in layer:
+#                     level_cost += cost
+#                     break
+#         return level_cost
 
     def h_maxlevel(self):
         """ Calculate the max level heuristic for the planning graph
@@ -188,15 +195,9 @@ class PlanningGraph:
         -----
         WARNING: you should expect long runtimes using this heuristic with A*
         """
-        levelcost = 0
         while not self._is_leveled:
-            goalsmet = True
-            for goal in self.goal:
-                if goal not in self.literal_layers[-1]:
-                    goalsmet = False
-            if goalsmet:
-                return levelcost
-            levelcost+=1
+            if self.goal.issubset(self.literal_layers[-1]):
+                return len(self.literal_layers) - 1
             self._extend()
 
     def h_setlevel(self):
@@ -223,19 +224,14 @@ class PlanningGraph:
         """
         levelcost = 0
         while not self._is_leveled:
-            goalsmet = True
-            goalsmutex = False
-            for goal in self.goal:
-                currentLayer = self.literal_layers[-1]
-                if goal not in currentLayer:
-                    goalsmet = False
-                else:
-                    for othergoal in self.goal:
-                        if currentLayer.is_mutex(goal,othergoal):
-                            goalsmutex = True
-            if goalsmet and not goalsmutex:
-                return levelcost
-            levelcost+=1
+            if self.goal.issubset(self.literal_layers[-1]):
+                goalsmutex = False
+                for goal1,goal2 in combinations(self.goal,2):
+                    if self.literal_layers[-1].is_mutex(goal1,goal2):
+                        goalsmutex = True
+                        break
+                if not goalsmutex:
+                    return len(self.literal_layers) - 1
             self._extend()
 
     ##############################################################################
