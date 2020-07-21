@@ -19,9 +19,8 @@ class ActionLayer(BaseActionLayer):
         layers.ActionNode
         """
         for effectA in self.children[actionA]:
-            for effectB in self.children[actionB]:
-                if effectA == ~effectB:
-                    return True
+            if ~effectA in self.children[actionB]:
+                return True
         return False
 
 
@@ -36,14 +35,9 @@ class ActionLayer(BaseActionLayer):
         --------
         layers.ActionNode
         """
-        for effectA in self.children[actionA]:
-            for effectB in self.parents[actionB]:
-                if effectA == ~effectB:
-                    return True
-        for effectB in self.children[actionB]:
-            for effectA in self.parents[actionA]:
-                if effectB == ~effectA:
-                    return True
+        for effect in self.children[actionA]:
+            if ~ effect in self.parents[actionB]:
+                return True
         return False
 
     def _competing_needs(self, actionA, actionB):
