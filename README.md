@@ -1,3 +1,4 @@
+## Designed a program that searches for the series of possible actions to reach the goal as part of AI nanodegree program on Udacity
 
 ## Introduction
 Planning is an important topic in AI because intelligent agents are expected to automatically plan their own actions in uncertain domains. Planning and scheduling systems are commonly used in automation and logistics operations, robotics and self-driving cars, and for aerospace applications like the Hubble telescope and NASA Mars rovers.
